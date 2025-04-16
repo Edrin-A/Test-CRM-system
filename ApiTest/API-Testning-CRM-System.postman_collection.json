@@ -1,0 +1,2184 @@
+{
+	"info": {
+		"_postman_id": "92a7ecb0-cc83-45dc-80dd-fc2239bbaf8d",
+		"name": "API-Testning-CRM-System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43523445"
+	},
+	"item": [
+		{
+			"name": "Base request",
+			"item": [
+				{
+					"name": "Login/Logout",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lyckad inloggning\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.username).to.eql(\"admin1\");\r",
+											"    pm.expect(jsonData.role).to.eql(\"ADMIN\");\r",
+											"    \r",
+											"    // Spara användar-ID för senare användning\r",
+											"    pm.environment.set(\"userId\", jsonData.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"admin1\",\r\n  \"password\": \"admin1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Logga ut\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tickets",
+					"item": [
+						{
+							"name": "Create new ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Skapa nytt ärende\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"chatToken\");\r",
+											"    \r",
+											"    // spara chatToken för senare användning\r",
+											"    pm.environment.set(\"chatToken\", jsonData.chatToken);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Email\": \"test@example.com\",\r\n  \"Subject\": \"Test ärende från Postman\",\r\n  \"Message\": \"Detta är ett testärende från Postman.\",\r\n  \"ProductId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/form",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"form"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all tickets",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta ärendelista\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    \r",
+											"    // spara senaste ärendets ID för senare användning\r",
+											"    if (jsonData.length > 0) {\r",
+											"        pm.environment.set(\"ticketId\", jsonData[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/tickets",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tickets"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Uppdaterade ärendestatus\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Status\": \"PÅGÅENDE\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tickets",
+										"{{ticketId}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Chat",
+					"item": [
+						{
+							"name": "Get chat history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta chatthistorik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"messages\");\r",
+											"    pm.expect(jsonData).to.have.property(\"ticket_status\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/chat/{{chatToken}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"chat",
+										"{{chatToken}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send a message",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Meddelandet har skickats\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Message\": \"Detta är ett testmeddelande från Postman.\",\r\n  \"SenderType\": \"USER\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/chat/{{chatToken}}/message",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"chat",
+										"{{chatToken}}",
+										"message"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin actions",
+					"item": [
+						{
+							"name": "Products",
+							"item": [
+								{
+									"name": "Get all products",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Hämta produkter för företaget\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an(\"array\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/companies/{{companyId}}/products",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"companies",
+												"{{companyId}}",
+												"products"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add new product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Lägg till produkt\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"id\");\r",
+													"    pm.expect(jsonData).to.have.property(\"name\");\r",
+													"    pm.expect(jsonData.name).to.eql(\"Testprodukt från postman\");\r",
+													"    \r",
+													"    // spara produktens ID för senare tester\r",
+													"    pm.environment.set(\"productId\", jsonData.id);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"Name\": \"Testprodukt från postman\",\r\n  \"Description\": \"En produkt skapad för testsyften från postman\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/companies/{{companyId}}/products",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"companies",
+												"{{companyId}}",
+												"products"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Uppdaterade en produkt\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"name\");\r",
+													"    pm.expect(jsonData.name).to.eql(\"Testprodukt från postman uppdaterad\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"Name\": \"Testprodukt från postman uppdaterad\",\r\n  \"Description\": \"En uppdaterad produktbeskrivning\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/companies/{{companyId}}/products/{{productId}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"companies",
+												"{{companyId}}",
+												"products",
+												"{{productId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Tog bort en produkt\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"message\");\r",
+													"    pm.expect(jsonData.message).to.include(\"har tagits bort\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/companies/{{companyId}}/products/{{productId}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"companies",
+												"{{companyId}}",
+												"products",
+												"{{productId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Manage support users",
+							"item": [
+								{
+									"name": "Get all support users",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Hämta supportanvändare\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an(\"array\");\r",
+													"    \r",
+													"    // spara en supportanvändares ID för senare tester\r",
+													"    if (jsonData.length > 0) {\r",
+													"        pm.environment.set(\"supportUserId\", jsonData[0].id);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/support-users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"support-users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add new support user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Lägg till ny supportanvändare\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"message\");\r",
+													"    pm.expect(jsonData.message).to.include(\"Support user created\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"Username\": \"testpostmansupport\",\r\n  \"Password\": \"testpostmansupport123\",\r\n  \"Email\": \"testpostmansupport@example.com\",\r\n  \"Role\": \"SUPPORT\",\r\n  \"CompanyId\": {{companyId}}\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/admin",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"admin"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update a support user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Uppdaterade en supportanvändare\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"username\");\r",
+													"    pm.expect(jsonData.username).to.eql(\"testsupport_updated\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"Username\": \"testpostmansupport_updated\",\r\n  \"Email\": \"testpostmansupport_updated@example.com\",\r\n  \"CompanyId\": {{companyId}}\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/support-users/{{supportUserId}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"support-users",
+												"{{supportUserId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete a support user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Tog bort en supportanvändare\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.have.property(\"message\");\r",
+													"    pm.expect(jsonData.message).to.include(\"har tagits bort\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/support-users/{{supportUserId}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"support-users",
+												"{{supportUserId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Companies",
+					"item": [
+						{
+							"name": "Get all companies",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta företagslista\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    \r",
+											"    // spara första företagets ID för senare användning\r",
+											"    if (jsonData.length > 0) {\r",
+											"        pm.environment.set(\"companyId\", jsonData[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/companies",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all products from a company",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta produkter för företag\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/companies/{{companyId}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies",
+										"{{companyId}}",
+										"products"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Support/Admin actions",
+					"item": [
+						{
+							"name": "Change password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ändra lösenord\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"    pm.expect(jsonData.message).to.include(\"Lösenord uppdaterat\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"userName\": \"support1\",\r\n  \"email\": \"support1@test.com\",\r\n  \"password\": \"support1\",\r\n  \"newPassword\": \"support1new\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/Newpassword",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"Newpassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get your user info",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta användardetaljer\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"username\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"role\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{userId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Feedback",
+					"item": [
+						{
+							"name": "Close ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Uppdaterade ärendestatus\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Status\": \"LÖST\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tickets",
+										"{{ticketId}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send feedback",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Skicka feedback\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"    pm.expect(jsonData.message).to.include(\"Tack för din feedback\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"TicketId\": {{ticketId}},\r\n  \"Rating\": 4,\r\n  \"Comment\": \"Bra service, snabbt svar!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/feedback",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"feedback"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Check if ticket feedback exists",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Kontrollera feedback existens\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"exists\");\r",
+											"    pm.expect(jsonData.exists).to.be.oneOf([true, false]);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/feedback/exists/{{ticketId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"feedback",
+										"exists",
+										"{{ticketId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Statistics",
+					"item": [
+						{
+							"name": "Get user statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta användarstatistik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // kontrollera att statistik finns för de olika rollerna\r",
+											"    pm.expect(jsonData).to.be.an(\"object\");\r",
+											"    pm.expect(Object.keys(jsonData).length).to.be.at.least(1);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/statistics/user-counts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"statistics",
+										"user-counts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get dashboard statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta dashboard statistik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // kontrollera att alla förväntade statistikfält finns\r",
+											"    pm.expect(jsonData).to.have.property(\"totalCustomers\");\r",
+											"    pm.expect(jsonData).to.have.property(\"customersToday\");\r",
+											"    pm.expect(jsonData).to.have.property(\"activeNow\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/statistics/dashboard",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"statistics",
+										"dashboard"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Test flows",
+			"item": [
+				{
+					"name": "Test - Base test flow with tickets",
+					"item": [
+						{
+							"name": "Create new ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Skapa nytt ärende i ett testflow\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"chatToken\");\r",
+											"    \r",
+											"    // spara chatToken för senare användning\r",
+											"    pm.environment.set(\"chatToken\", jsonData.chatToken);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Email\": \"testflow@example.com\",\r\n  \"Subject\": \"Test flow ärende från Postman\",\r\n  \"Message\": \"Detta är ett test flow ärende från Postman.\",\r\n  \"ProductId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/form",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"form"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lyckad inloggning\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.username).to.eql(\"support1\");\r",
+											"    pm.expect(jsonData.role).to.eql(\"SUPPORT\");\r",
+											"    \r",
+											"    // Spara användar-ID för senare användning\r",
+											"    pm.environment.set(\"userId\", jsonData.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"support1\",\r\n  \"password\": \"support1new\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all tickets",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta ärendelista\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    \r",
+											"    // spara senaste ärendets ID för senare användning\r",
+											"    if (jsonData.length > 0) {\r",
+											"        pm.environment.set(\"ticketId\", jsonData[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/tickets",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tickets"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get chat history",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta chatthistorik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"messages\");\r",
+											"    pm.expect(jsonData).to.have.property(\"ticket_status\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/chat/{{chatToken}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"chat",
+										"{{chatToken}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send a message",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Meddelandet har skickats\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Message\": \"Detta är ett testmeddelande från ett testflow Postman.\",\r\n  \"SenderType\": \"SUPPORT\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/chat/{{chatToken}}/message",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"chat",
+										"{{chatToken}}",
+										"message"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Uppdaterade ärendestatus\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Status\": \"PÅGÅENDE\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"tickets",
+										"{{ticketId}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Logga ut\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Detta flöde testar de grundläggande funktionerna utan att kräva omfattande rättigheter"
+				},
+				{
+					"name": "Test - Admin action testflow",
+					"item": [
+						{
+							"name": "Login as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lyckad inloggning\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.username).to.eql(\"admin1\");\r",
+											"    pm.expect(jsonData.role).to.eql(\"ADMIN\");\r",
+											"    \r",
+											"    // Spara användar-ID för senare användning\r",
+											"    pm.environment.set(\"userId\", jsonData.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"admin1\",\r\n  \"password\": \"admin1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all companies",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta företagslista\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    \r",
+											"    // spara första företagets ID för senare användning\r",
+											"    if (jsonData.length > 0) {\r",
+											"        pm.environment.set(\"companyId\", jsonData[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/companies",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all support users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta supportanvändare\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    \r",
+											"    // spara en supportanvändares ID för senare tester\r",
+											"    if (jsonData.length > 0) {\r",
+											"        pm.environment.set(\"supportUserId\", jsonData[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/support-users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"support-users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add new support user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Skapa supportanvändare\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"    pm.expect(jsonData.message).to.include(\"Support user created\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Generera unikt användarnamn och spara för senare\r",
+											"const timestamp = new Date().getTime();\r",
+											"const username = `testpostmanflow${timestamp}`;\r",
+											"const email = `${username}@example.com`;\r",
+											"const password = `${username}123`;\r",
+											"\r",
+											"// Spara dessa värden för senare användning\r",
+											"pm.environment.set(\"newSupportUsername\", username);\r",
+											"pm.environment.set(\"newSupportEmail\", email);\r",
+											"pm.environment.set(\"newSupportPassword\", password);\r",
+											"\r",
+											"console.log(`Förbereder ny supportanvändare: ${username}`);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Username\": \"{{newSupportUsername}}\",\r\n  \"Password\": \"{{newSupportPassword}}\",\r\n  \"Email\": \"{{newSupportEmail}}\",\r\n  \"Role\": \"SUPPORT\",\r\n  \"CompanyId\": {{companyId}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"admin"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get new support user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Kontrollera att vi har ett användarnamn att söka efter\r",
+											"if (!pm.environment.get(\"newSupportUsername\")) {\r",
+											"    console.error(\"Inget användarnamn finns sparat!\");\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hitta den nyligen skapade supportanvändaren\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // Hitta användaren med det matchande användarnamnet\r",
+											"    const username = pm.environment.get(\"newSupportUsername\");\r",
+											"    const foundUser = jsonData.find(user => user.username === username);\r",
+											"    \r",
+											"    pm.expect(foundUser).to.not.be.undefined;\r",
+											"    \r",
+											"    if (foundUser) {\r",
+											"        // Spara användarens ID för efterföljande tester\r",
+											"        pm.environment.set(\"supportUserId\", foundUser.id);\r",
+											"        console.log(`Hittat och sparat supportUserId: ${foundUser.id} för användare ${username}`);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/support-users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"support-users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update a support user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Uppdaterade en supportanvändare\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // Hämta det förväntade användarnamnet från miljön, inte från templaten\r",
+											"    const expectedUsername = pm.environment.get(\"newSupportUsername\") + \"_updated\";\r",
+											"    \r",
+											"    pm.expect(jsonData).to.have.property(\"username\");\r",
+											"    pm.expect(jsonData.username).to.eql(expectedUsername);\r",
+											"    \r",
+											"    console.log(`Användare uppdaterad till: ${jsonData.username}`);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Kontrollera att support-ID finns\r",
+											"if (!pm.environment.get(\"supportUserId\")) {\r",
+											"    console.error(\"supportUserId saknas! Kan inte uppdatera användaren.\");\r",
+											"} else {\r",
+											"    console.log(`Förbereder uppdatering av användare med ID: ${pm.environment.get(\"supportUserId\")}`);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Username\": \"{{newSupportUsername}}_updated\",\r\n  \"Email\": \"{{newSupportEmail}}_updated\",\r\n  \"CompanyId\": {{companyId}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/support-users/{{supportUserId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"support-users",
+										"{{supportUserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete a support user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Tog bort en supportanvändare\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"    pm.expect(jsonData.message).to.include(\"har tagits bort\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Kontrollera att support-ID finns\r",
+											"if (!pm.environment.get(\"supportUserId\")) {\r",
+											"    console.error(\"supportUserId saknas! Kan inte ta bort användaren.\");\r",
+											"} else {\r",
+											"    console.log(`Förbereder borttagning av användare med ID: ${pm.environment.get(\"supportUserId\")}`);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/support-users/{{supportUserId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"support-users",
+										"{{supportUserId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all products",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta produkter för företaget\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/companies/{{companyId}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies",
+										"{{companyId}}",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add new product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Lägg till produkt\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData.name).to.eql(\"Testprodukt från postman flow\");\r",
+											"    \r",
+											"    // spara produktens ID för senare tester\r",
+											"    pm.environment.set(\"productId\", jsonData.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Name\": \"Testprodukt från postman flow\",\r\n  \"Description\": \"En produkt skapad för testsyften från postman flow\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/companies/{{companyId}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies",
+										"{{companyId}}",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Uppdaterade en produkt\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData.name).to.eql(\"Testprodukt från postman flow uppdaterad\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"Name\": \"Testprodukt från postman flow uppdaterad\",\r\n  \"Description\": \"En uppdaterad produktbeskrivning\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/companies/{{companyId}}/products/{{productId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies",
+										"{{companyId}}",
+										"products",
+										"{{productId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Tog bort en produkt\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"    pm.expect(jsonData.message).to.include(\"har tagits bort\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/companies/{{companyId}}/products/{{productId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"companies",
+										"{{companyId}}",
+										"products",
+										"{{productId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get user statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta användarstatistik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // kontrollera att statistik finns för de olika rollerna\r",
+											"    pm.expect(jsonData).to.be.an(\"object\");\r",
+											"    pm.expect(Object.keys(jsonData).length).to.be.at.least(1);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/statistics/user-counts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"statistics",
+										"user-counts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get dashboard statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hämta dashboard statistik\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    \r",
+											"    // kontrollera att alla förväntade statistikfält finns\r",
+											"    pm.expect(jsonData).to.have.property(\"totalCustomers\");\r",
+											"    pm.expect(jsonData).to.have.property(\"customersToday\");\r",
+											"    pm.expect(jsonData).to.have.property(\"activeNow\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/statistics/dashboard",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"statistics",
+										"dashboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Logga ut\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Detta flöde testar administratörsspecifika funktioner"
+				}
+			]
+		}
+	]
+}

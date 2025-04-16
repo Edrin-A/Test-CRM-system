@@ -1,0 +1,24 @@
+{
+  "bindingCulture": {
+    "name": "en-US"
+  },
+  "language": {
+    "feature": "en"
+  },
+  "stepAssemblies": [
+    {
+      "assembly": "GUItestProjekt"
+    }
+  ],
+  "generator": {
+    "allowDebugGeneratedFiles": true,
+    "dependencies": [
+      {
+        "assembly": "SpecFlow.xUnit"
+      }
+    ]
+  },
+  "unitTestProvider": {
+    "name": "xUnit"
+  }
+}
