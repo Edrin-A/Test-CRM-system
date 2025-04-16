@@ -41,6 +41,12 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
+// Use static files for the wwwroot folder
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapFallbackToFile("index.html");
+
 app.UseSession();
 
 // API-endpoints för autentisering 
