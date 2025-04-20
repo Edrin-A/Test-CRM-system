@@ -19,7 +19,7 @@ namespace GUItestProjekt.Steps
     public async Task Setup()
     {
       _playwright = await Playwright.CreateAsync();
-      _browser = await _playwright.Chromium.LaunchAsync(new() { Headless = false, SlowMo = 300 });
+      _browser = await _playwright.Chromium.LaunchAsync(new() { Headless = true, SlowMo = 300 });
       _page = await _browser.NewPageAsync();
       _testMessage = "Detta är ett testmeddelande från automatiserat test " + DateTime.Now.Ticks;
     }

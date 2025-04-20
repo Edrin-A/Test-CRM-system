@@ -20,7 +20,8 @@ namespace GUItestProjekt.Steps
       _playwright = await Playwright.CreateAsync();
       _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
       {
-        Headless = false
+        Headless = true,
+        SlowMo = 200
       });
       _page = await _browser.NewPageAsync();
       _customerMessage = "Kundmeddelande från automatiserat test " + DateTime.Now.Ticks;
